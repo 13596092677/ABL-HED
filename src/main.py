@@ -1,16 +1,22 @@
 import os
 import numpy as np
 import random
+
+import tensorflow
+
+from src.logic.python.learn_add import gen_mappings, opt_var_ids_sets_constraint, consistent_score_sets, flatten
+
 random_seed = random.randint(0, 10000)
 print("Selected random seed is : ", random_seed)
 np.random.seed(random_seed)
 random.seed(random_seed)
-import keras
+# import keras
 import pickle
 from keras.utils import np_utils
 from keras.models import Sequential
 from keras.layers import Dense, Activation, Conv2D, MaxPooling2D, Flatten, BatchNormalization
-from keras.optimizers import Adam
+# from keras.optimizers import Adam
+from tensorflow import optimizers
 from keras.preprocessing.image import ImageDataGenerator
 from PIL import Image
 from functools import partial
@@ -19,7 +25,7 @@ sys.path.insert(0, './logic/lib/')
 sys.path.insert(0, './logic/python/')
 from learn_add import *
 import LogicLayer as LL
-from keras import optimizers
+# from keras import optimizers
 from models import NN_model
 
 import argparse
@@ -99,7 +105,7 @@ def net_model_test(src_path, labels, src_data_name, shape=(28, 28, 1)):
 
     model = get_nlm_net(len(labels), shape)
     # Add decay
-    opt_rms = keras.optimizers.rmsprop(lr=0.001, decay=1e-6)
+    opt_rms = optimizers.RMSprop(lr=0.001, decay=1e-6)
     model.compile(optimizer=opt_rms,
                   loss='categorical_crossentropy',
                   metrics=['accuracy'])
@@ -661,7 +667,7 @@ def nlm_main_func(labels, src_data_name, src_data_file, pl_file_path, shape, arg
     base_model = get_nlm_net(len(labels), shape)
     for i in range(len(base_model.layers)):
         base_model.layers[i].set_weights(t_model.layers[i].get_weights())
-    opt_rms = keras.optimizers.rmsprop(lr=0.001, decay=1e-6)
+    opt_rms = optimizers.RMSprop(lr=0.001, decay=1e-6)
     base_model.compile(optimizer=opt_rms, loss='categorical_crossentropy', metrics=['accuracy'])
 
     # Get file data
